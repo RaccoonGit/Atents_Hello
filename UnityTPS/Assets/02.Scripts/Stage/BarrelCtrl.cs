@@ -20,6 +20,12 @@ public class BarrelCtrl : MonoBehaviour
     [SerializeField]
     private Rigidbody rb;
 
+    public Texture[] textures;
+    [SerializeField]
+    private Material[] mats;
+    [SerializeField]
+    private MeshRenderer _renderer;
+
     [Header("¸Þ½¬")]
     public Mesh[] meshes;
     public MeshFilter filter;
@@ -31,6 +37,7 @@ public class BarrelCtrl : MonoBehaviour
     public bool isExplode = false;
     void Start()
     {
+        _renderer = GetComponent<MeshRenderer>();
         filter = GetComponent<MeshFilter>();
         rb = GetComponent<Rigidbody>();
         _source = GetComponent<AudioSource>();
@@ -38,6 +45,8 @@ public class BarrelCtrl : MonoBehaviour
         streamEff = Resources.Load<GameObject>("Effects/FlameStream_VFX");
         flameEff = Resources.Load<GameObject>("Effects/MediumFlames_VFX");
         explodeClip = Resources.Load<AudioClip>("Sound/grenade_exp2_SFX");
+        _renderer.material.mainTexture = textures[Random.Range(0, textures.Length)];
+        // _renderer.material = mats[Random.Range(0,3)];
     }
 
     private void OnCollisionEnter(Collision col)
@@ -91,6 +100,24 @@ public class BarrelCtrl : MonoBehaviour
 
         int idx = Random.Range(0, meshes.Length);
         filter.sharedMesh = meshes[idx];
+        Invoke("BarrelMassBack", 3.0f);
         // Destroy(gameObject, 3.0f);
+    }
+
+    void BarrelMassBack()
+    {
+        Collider[] cols = Physics.OverlapSphere(transform.position, 20.0f, 1 << LayerMask.NameToLayer("Barrel"));
+
+        foreach (Collider col in cols)
+        {
+            if (!col.GetComponent<BarrelCtrl>().isExplode)
+                col.GetComponent<BarrelCtrl>().Explode();
+
+            if (rb != null)
+            {
+                rb.mass = 50.0f;
+                rb.AddExplosionForce(120.0f, transform.position, 20.0f, 100.0f);
+            }
+        }
     }
 }
