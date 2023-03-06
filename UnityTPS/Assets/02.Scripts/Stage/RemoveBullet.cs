@@ -4,24 +4,36 @@ using UnityEngine;
 
 public class RemoveBullet : MonoBehaviour
 {
+    #region Tag String
     string bulletTag = "BULLET";
+    #endregion
+
+    #region Components
+    [SerializeField]
+    private AudioSource _source;
+    #endregion
+
+    #region Resources Objects
     [SerializeField]
     private GameObject hitEffect;
     [SerializeField]
-    private AudioSource _source;
-    [SerializeField]
     private AudioClip hitSound;
+    #endregion
 
-    BarrelCtrl brCtrl;
-
-    private void Start()
+    /***********************************************************************
+    *                             Unity Events
+    ***********************************************************************/
+    #region Unity Events
+    /// <summary> 컴포넌트 바인딩 </summary>
+    private void Awake()
     {
-        brCtrl = GetComponent<BarrelCtrl>();
         _source = GetComponent<AudioSource>();
+
         hitSound = Resources.Load<AudioClip>("Sound/bullet_hit_metal");
         hitEffect = Resources.Load<GameObject>("Effects/TinyExplosion_VFX");
     }
 
+    /// <summary> 콜라이더 충돌 감지 메서드 </summary>
     private void OnCollisionEnter(Collision col)
     {
         if(col.collider.tag == bulletTag)
@@ -43,4 +55,5 @@ public class RemoveBullet : MonoBehaviour
             _source.PlayOneShot(hitSound);
         }
     }
+    #endregion
 }

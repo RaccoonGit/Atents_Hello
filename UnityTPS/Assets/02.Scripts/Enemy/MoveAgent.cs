@@ -64,7 +64,9 @@ public class MoveAgent : MonoBehaviour
     #endregion
 
     #region Public Fields
+    // 패트롤 위치 리스트
     public List<Transform> wayPoints;
+    // 다음 패트롤 위치 인덱스
     public int nextIdx;
     #endregion
 
@@ -110,9 +112,8 @@ public class MoveAgent : MonoBehaviour
 
         // 순찰중일때만 작동
         if (!_patrolling) return;
-        Debug.Log(agent.velocity.sqrMagnitude);
         // 목적지의 거리가 0.5보다 작으면, 이동중인징 알기 위해
-        if(agent.remainingDistance <= 0.5f && agent.velocity.sqrMagnitude >= 0.2f)
+        if(agent.remainingDistance <= 0.5f && agent.velocity.sqrMagnitude >= 0.2f * 0.2f)
         {
             nextIdx = ++nextIdx % wayPoints.Count;
             MoveWayPoint();
@@ -120,8 +121,12 @@ public class MoveAgent : MonoBehaviour
     }
     #endregion
 
+    /***********************************************************************
+    *                            Private Methods
+    ***********************************************************************/
+    #region Private Methods
     /// <summary> 객체를 순찰 포인트로 이동하는 메소드 </summary>
-    void MoveWayPoint()
+    private void MoveWayPoint()
     {
         // 최단 경로가 검색되지 않으면 빠져나간다.
         if (agent.isPathStale) return;
@@ -129,6 +134,19 @@ public class MoveAgent : MonoBehaviour
         agent.isStopped = false;
     }
 
+    /// <summary> 타겟의 위치로 객체를 이동 시키는 메서드 </summary>
+    private void TraceTarget(Vector3 pos)
+    {
+        if (agent.isPathStale) return;
+        agent.destination = pos;
+        agent.isStopped = false;
+    }
+    #endregion
+
+    /***********************************************************************
+    *                            Public Methods
+    ***********************************************************************/
+    #region Public Methods
     /// <summary> 객체를 정지 시키는 메서드 </summary>
     public void Stop()
     {
@@ -136,12 +154,5 @@ public class MoveAgent : MonoBehaviour
         agent.velocity = Vector3.zero;
         _patrolling = false;
     }
-
-    /// <summary> 타겟의 위치로 객체를 이동 시키는 메서드 </summary>
-    void TraceTarget(Vector3 pos)
-    {
-        if (agent.isPathStale) return;
-        agent.destination = pos;
-        agent.isStopped = false;
-    }
+    #endregion
 }

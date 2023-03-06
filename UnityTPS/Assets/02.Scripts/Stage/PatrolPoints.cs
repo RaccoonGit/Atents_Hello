@@ -4,9 +4,17 @@ using UnityEngine;
 
 public class PatrolPoints : MonoBehaviour
 {
+    #region Public Field
+    // 기즈모 라인 색상
     public Color lineColor = Color.black;
+    // 노드 리스트
     public List<Transform> nodes;
+    #endregion
 
+    /***********************************************************************
+    *                            Gizmos Events
+    ***********************************************************************/
+    #region Gizmos Events
     private void OnDrawGizmos()
     {
         Gizmos.color = lineColor;
@@ -51,15 +59,5 @@ public class PatrolPoints : MonoBehaviour
             Gizmos.DrawSphere(curNode, 0.3f);
         }
     }
-
-    void Start()
-    {
-        
-    }
-
-    // Update is called once per frame
-    void Update()
-    {
-        
-    }
+    #endregion
 }

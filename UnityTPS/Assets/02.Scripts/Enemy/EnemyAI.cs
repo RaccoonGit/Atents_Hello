@@ -63,10 +63,12 @@ public class EnemyAI : MonoBehaviour
     {
         StartCoroutine(CheckState());
         StartCoroutine(EnemyAction());
+        // StartCoroutine(SetAnimVelocity());
     }
 
     private void Update()
     {
+        Debug.Log(moveAgent.speed);
         // 프로퍼티에 의해 조절 된 Speed 값으로 Animator 파라미터 조절
         animator.SetFloat(hashVelocity, moveAgent.speed);
     }

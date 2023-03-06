@@ -4,7 +4,29 @@ using UnityEngine;
 
 public class BarrelCtrl : MonoBehaviour
 {
+    #region Tag String
     string bulletTag = "BULLET";
+    #endregion
+
+    #region Components
+    [SerializeField]
+    private Rigidbody rbody;
+    [SerializeField]
+    private MeshRenderer _renderer;
+    public MeshFilter _filter;
+    #endregion
+
+    #region Private Fields
+    [SerializeField]
+    private List<GameObject> streamFire;
+    #endregion
+
+    #region Public Fields
+    public int hitCount = 0;
+    public bool isExplode = false;
+    #endregion
+
+    #region Resources Load Objects
     [SerializeField]
     private GameObject explodeEff;
     [SerializeField]
@@ -17,38 +39,38 @@ public class BarrelCtrl : MonoBehaviour
     private AudioClip explodeClip;
     [SerializeField]
     private AudioClip streamClip;
-    [SerializeField]
-    private Rigidbody rb;
+    #endregion
 
-    public Texture[] textures;
+    #region Editor Bind Objects
+    [SerializeField]
+    private Texture[] textures;
     [SerializeField]
     private Material[] mats;
-    [SerializeField]
-    private MeshRenderer _renderer;
-
     [Header("메쉬")]
     public Mesh[] meshes;
-    public MeshFilter filter;
+    #endregion
 
-    [SerializeField]
-    private List<GameObject> streamFire;
-
-    public int hitCount = 0;
-    public bool isExplode = false;
+    /***********************************************************************
+    *                             Unity Events
+    ***********************************************************************/
+    #region Unity Events
+    /// <summary> 컴포넌트 바인딩 </summary>
     void Start()
     {
         _renderer = GetComponent<MeshRenderer>();
-        filter = GetComponent<MeshFilter>();
-        rb = GetComponent<Rigidbody>();
+        _filter = GetComponent<MeshFilter>();
+        rbody = GetComponent<Rigidbody>();
         _source = GetComponent<AudioSource>();
+
         explodeEff = Resources.Load<GameObject>("Effects/SmallExplosion_VFX");
         streamEff = Resources.Load<GameObject>("Effects/FlameStream_VFX");
         flameEff = Resources.Load<GameObject>("Effects/MediumFlames_VFX");
         explodeClip = Resources.Load<AudioClip>("Sound/grenade_exp2_SFX");
+
         _renderer.material.mainTexture = textures[Random.Range(0, textures.Length)];
-        // _renderer.material = mats[Random.Range(0,3)];
     }
 
+    /// <summary> 콜라이더 충돌 감지 메서드 </summary>
     private void OnCollisionEnter(Collision col)
     {
         if (col.collider.tag == bulletTag)
@@ -72,7 +94,34 @@ public class BarrelCtrl : MonoBehaviour
             }
         }
     }
+    #endregion
 
+    /***********************************************************************
+    *                            Private Methods
+    ***********************************************************************/
+    #region Private Methods
+    private void BarrelMassBack()
+    {
+        Collider[] cols = Physics.OverlapSphere(transform.position, 20.0f, 1 << LayerMask.NameToLayer("Barrel"));
+
+        foreach (Collider col in cols)
+        {
+            if (!col.GetComponent<BarrelCtrl>().isExplode)
+                col.GetComponent<BarrelCtrl>().Explode();
+
+            if (rbody != null)
+            {
+                rbody.mass = 50.0f;
+                rbody.AddExplosionForce(120.0f, transform.position, 20.0f, 100.0f);
+            }
+        }
+    }
+    #endregion
+
+    /***********************************************************************
+    *                            Public Methods
+    ***********************************************************************/
+    #region Public Methods
     public void Explode()
     {
         isExplode = true;
@@ -85,39 +134,23 @@ public class BarrelCtrl : MonoBehaviour
         // 자기 자신의 위치에서 20 근방에 있는 배럴의(콜라이더와 리지드 바디) 충돌체들을 cols 라는 배열에 대입한다.
         Collider[] cols = Physics.OverlapSphere(transform.position, 20.0f, 1 << LayerMask.NameToLayer("Barrel"));
 
-        foreach(Collider col in cols)
-        {
-            if(!col.GetComponent<BarrelCtrl>().isExplode)
-                col.GetComponent<BarrelCtrl>().Explode();
-
-            if(rb != null)
-            {
-                rb.mass = 1.0f;
-                // 리지드 바디 클래스에 있는 AddExplosionForce() 함수
-                rb.AddExplosionForce(120.0f, transform.position, 20.0f, 100.0f);
-            }
-        }
-
-        int idx = Random.Range(0, meshes.Length);
-        filter.sharedMesh = meshes[idx];
-        Invoke("BarrelMassBack", 3.0f);
-        // Destroy(gameObject, 3.0f);
-    }
-
-    void BarrelMassBack()
-    {
-        Collider[] cols = Physics.OverlapSphere(transform.position, 20.0f, 1 << LayerMask.NameToLayer("Barrel"));
-
         foreach (Collider col in cols)
         {
             if (!col.GetComponent<BarrelCtrl>().isExplode)
                 col.GetComponent<BarrelCtrl>().Explode();
 
-            if (rb != null)
+            if (rbody != null)
             {
-                rb.mass = 50.0f;
-                rb.AddExplosionForce(120.0f, transform.position, 20.0f, 100.0f);
+                rbody.mass = 1.0f;
+                // 리지드 바디 클래스에 있는 AddExplosionForce() 함수
+                rbody.AddExplosionForce(120.0f, transform.position, 20.0f, 100.0f);
             }
         }
+
+        int idx = Random.Range(0, meshes.Length);
+        _filter.sharedMesh = meshes[idx];
+        Invoke("BarrelMassBack", 3.0f);
+        // Destroy(gameObject, 3.0f);
     }
+    #endregion
 }

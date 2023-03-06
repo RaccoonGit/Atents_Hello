@@ -9,6 +9,10 @@ public class EnemyFire : MonoBehaviour
     private AudioClip fireSfx;
     #endregion
 
+    /***********************************************************************
+    *                             Unity Events
+    ***********************************************************************/
+    #region Unity Events
     void Awake()
     {
         source = GetComponent<AudioSource>();
@@ -19,4 +23,5 @@ public class EnemyFire : MonoBehaviour
     {
         
     }
+    #endregion
 }

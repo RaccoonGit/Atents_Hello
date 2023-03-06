@@ -4,16 +4,27 @@ using UnityEngine;
 
 public class PlayerCtrl : MonoBehaviour
 {
-    private float h, v, r;
-    private float moveSpeed = 3.5f;
-    private float turnSpeed = 90.0f;
-
+    #region Components
     [SerializeField] // æÓ∆Æ∏Æ∫‰∆Æ
     private Animation anim;
     [SerializeField]
     private Transform tr;
-    public bool isRun = false;
+    #endregion
 
+    #region Private Fields
+    private float h, v, r;
+    private float moveSpeed = 3.5f;
+    private float turnSpeed = 90.0f;
+    #endregion
+
+    #region Public Fields
+    public bool isRun = false;
+    #endregion
+
+    /***********************************************************************
+    *                             Unity Events
+    ***********************************************************************/
+    #region Unity Events
     void Start()
     {
         anim = GetComponent<Animation>();
@@ -75,4 +86,5 @@ public class PlayerCtrl : MonoBehaviour
         tr.Rotate(Vector3.up * r * Time.deltaTime * turnSpeed);
         #endregion
     }
+    #endregion
 }
