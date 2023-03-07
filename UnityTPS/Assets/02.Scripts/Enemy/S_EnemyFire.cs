@@ -2,7 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class EnemyFire : MonoBehaviour
+public class S_EnemyFire : MonoBehaviour
 {
     #region Animator Hash
     private readonly int hashFire = Animator.StringToHash("isFire");
@@ -26,16 +26,19 @@ public class EnemyFire : MonoBehaviour
     private Transform firePos;
 
     private float nextTime = 0.0f;
-    private float fireRate = 0.1f;
-    private float damping = 7.0f;
+    private float fireRate = 0.4f;
+    private float damping = 10.0f;
 
-    [SerializeField] [Tooltip("재장전 시간")]
+    [SerializeField]
+    [Tooltip("재장전 시간")]
     private readonly float reloadTime = 2.0f;
-    [SerializeField] [Tooltip("최대 총알 수")]
-    private readonly int maxAmmo = 10;
+    [SerializeField]
+    [Tooltip("최대 총알 수")]
+    private readonly int maxAmmo = 20;
 
-    [SerializeField] [Tooltip("현재 총알 수")]
-    private int curAmmo = 10;
+    [SerializeField]
+    [Tooltip("현재 총알 수")]
+    private int curAmmo = 20;
     private WaitForSeconds wsReload;
     #endregion
 
@@ -62,11 +65,11 @@ public class EnemyFire : MonoBehaviour
 
         playerTr = GameObject.FindWithTag("Player").transform;
         enemyTr = GetComponent<Transform>();
-        firePos = transform.GetChild(3).GetChild(1).GetComponent<Transform>();
-        _muzzleFlash = transform.GetChild(3).GetChild(1).GetChild(0).GetComponent<MeshRenderer>();
+        firePos = transform.GetChild(3).GetChild(0).GetChild(1).GetComponent<Transform>();
+        _muzzleFlash = transform.GetChild(3).GetChild(0).GetChild(1).GetChild(0).GetComponent<MeshRenderer>();
 
         _bulletPrefab = Resources.Load<GameObject>("E_Bullet");
-        fireSfx = Resources.Load<AudioClip>("Sound/p_m4_SFX");
+        fireSfx = Resources.Load<AudioClip>("Sound/p_ak_SFX");
         reloadSfx = Resources.Load<AudioClip>("Sound/p_reload_1");
 
         wsReload = new WaitForSeconds(reloadTime);
@@ -76,7 +79,7 @@ public class EnemyFire : MonoBehaviour
 
     void Update()
     {
-        if(isFire && !isReload)
+        if (isFire && !isReload)
         {
             if (Time.time >= nextTime)
             {
@@ -88,6 +91,7 @@ public class EnemyFire : MonoBehaviour
             Vector3 upperVec = new Vector3(0.0f, 1.5f, 0.0f);
             Quaternion fireRot = Quaternion.LookRotation((playerTr.position + upperVec) - firePos.position);
             firePos.rotation = Quaternion.Slerp(firePos.rotation, fireRot, Time.deltaTime * damping);
+            // firePosCtrl.SetFirePosRotation(fireRot);
         }
     }
     #endregion
@@ -103,14 +107,14 @@ public class EnemyFire : MonoBehaviour
         _source.PlayOneShot(fireSfx);
         _animator.SetTrigger(hashFire);
         isReload = (--curAmmo % maxAmmo == 0);
-        if(isReload)
+        if (isReload)
         {
             StartCoroutine(Reloading());
         }
         StartCoroutine(ShowMuzzleFlash());
     }
     #endregion
-    
+
     private IEnumerator ShowMuzzleFlash()
     {
         float _scale = Random.Range(1.0f, 2.0f);

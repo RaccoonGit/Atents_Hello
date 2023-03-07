@@ -2,7 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class EnemyAI : MonoBehaviour
+public class S_EnemyAI : MonoBehaviour
 {
     public enum STATE { PATROL, TRACE, ATTACK, DIE }
 
@@ -13,12 +13,12 @@ public class EnemyAI : MonoBehaviour
     #endregion
 
     #region Comonenets
-    private Animator animator;
-    private EnemyFire enemyFire;
+    private Animator _animator;
     #endregion
 
     #region Classes
-    private MoveAgent moveAgent;
+    private S_EnemyFire enemyFire;
+    private S_MoveAgent moveAgent;
     #endregion
 
     #region State Machine
@@ -26,6 +26,8 @@ public class EnemyAI : MonoBehaviour
     #endregion
 
     #region Private Fields
+    private Color _attcolor = Color.red;
+    private Color _tracecolor = Color.blue;
     private new WaitForSeconds ws;
     [SerializeField]
     private Transform player;
@@ -34,8 +36,8 @@ public class EnemyAI : MonoBehaviour
     #endregion
 
     #region Public Fields
-    public float traceDist = 10.0f;
-    public float attackDist = 5.0f;
+    public float traceDist = 15.0f;
+    public float attackDist = 10.0f;
     public bool isDie = false;
     #endregion
 
@@ -46,12 +48,13 @@ public class EnemyAI : MonoBehaviour
     /// <summary> 컴포넌트 할당 </summary>
     void Awake()
     {
-        // Move Agent 클래스 할당
-        moveAgent = GetComponent<MoveAgent>();
+        // S_MoveAgent 클래스 할당
+        moveAgent = GetComponent<S_MoveAgent>();
+        // S_EnemyFire 클래스 할당
+        enemyFire = GetComponent<S_EnemyFire>();
         // Animator 컴포넌트 할당
-        animator = GetComponent<Animator>();
+        _animator = GetComponent<Animator>();
 
-        enemyFire = GetComponent<EnemyFire>();
 
         // This.Transform
         Tr = GetComponent<Transform>();
@@ -72,7 +75,17 @@ public class EnemyAI : MonoBehaviour
     private void Update()
     {
         // 프로퍼티에 의해 조절 된 Speed 값으로 Animator 파라미터 조절
-        animator.SetFloat(hashVelocity, moveAgent.speed);
+        _animator.SetFloat(hashVelocity, moveAgent.speed);
+    }
+
+    private void OnDrawGizmos()
+    {
+        Gizmos.color = _attcolor;
+        Gizmos.DrawWireSphere(Tr.position, attackDist);
+
+        Gizmos.color = _tracecolor;
+        Gizmos.DrawWireSphere(Tr.position, traceDist);
+
     }
     #endregion
 
@@ -105,7 +118,7 @@ public class EnemyAI : MonoBehaviour
     /// <summary> 실질적 액션을 처리하는 비 동기 코루틴 </summary>
     private IEnumerator EnemyAction()
     {
-        while(!isDie)
+        while (!isDie)
         {
             yield return ws;
             switch (curState)
@@ -113,16 +126,16 @@ public class EnemyAI : MonoBehaviour
                 case STATE.PATROL:
                     enemyFire.isFire = false;
                     moveAgent.patrolling = true;
-                    animator.SetBool(hashMove, true);
+                    _animator.SetBool(hashMove, true);
                     break;
                 case STATE.TRACE:
                     enemyFire.isFire = false;
                     moveAgent.traceTarget = player.position;
-                    animator.SetBool(hashMove, true);
+                    _animator.SetBool(hashMove, true);
                     break;
                 case STATE.ATTACK:
                     moveAgent.Stop();
-                    animator.SetBool(hashMove, false);
+                    _animator.SetBool(hashMove, false);
                     if (!enemyFire.isFire)
                         enemyFire.isFire = true;
                     break;
@@ -136,10 +149,10 @@ public class EnemyAI : MonoBehaviour
     /// <summary> 프로퍼티에 의해 조절 된 Speed 값으로 Animator 파라미터 조절 </summary>
     private IEnumerator SetAnimVelocity()
     {
-        while(!isDie)
+        while (!isDie)
         {
             // 프로퍼티에 의해 조절 된 Speed 값으로 Animator 파라미터 조절
-            animator.SetFloat(hashVelocity, moveAgent.speed);
+            _animator.SetFloat(hashVelocity, moveAgent.speed);
             yield return null;
         }
     }

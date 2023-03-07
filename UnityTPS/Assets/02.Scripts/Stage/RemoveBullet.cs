@@ -6,6 +6,7 @@ public class RemoveBullet : MonoBehaviour
 {
     #region Tag String
     string bulletTag = "BULLET";
+    string e_bulletTag = "E_BULLET";
     #endregion
 
     #region Components
@@ -36,7 +37,7 @@ public class RemoveBullet : MonoBehaviour
     /// <summary> 콜라이더 충돌 감지 메서드 </summary>
     private void OnCollisionEnter(Collision col)
     {
-        if(col.collider.tag == bulletTag)
+        if(col.collider.tag == bulletTag || col.collider.tag == e_bulletTag)
         {
             // if (brCtrl != null) brCtrl.hitCount++;
 

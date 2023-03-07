@@ -17,7 +17,7 @@ GameObject:
   - component: {fileID: 824436457}
   - component: {fileID: 8704747664396540118}
   - component: {fileID: 8793133556691023302}
-  m_Layer: 8
+  m_Layer: 6
   m_Name: Barrel
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -225,8 +225,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: e1e3b309267fa25468215c7f9d8f4f2d, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  hitEffect: {fileID: 0}
   _source: {fileID: 0}
+  hitEffect: {fileID: 0}
   hitSound: {fileID: 0}
 --- !u!114 &8704747664396540118
 MonoBehaviour:
@@ -240,13 +240,18 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: c61d145b7d6d00c4aa1cda2eb876fa61, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  rbody: {fileID: 0}
+  _renderer: {fileID: 0}
+  _filter: {fileID: 0}
+  streamFire: []
+  hitCount: 0
+  isExplode: 0
   explodeEff: {fileID: 0}
   streamEff: {fileID: 0}
   flameEff: {fileID: 0}
   _source: {fileID: 0}
   explodeClip: {fileID: 0}
   streamClip: {fileID: 0}
-  rb: {fileID: 0}
   textures:
   - {fileID: 2800000, guid: d2170db6828d61d42b9fc306ed9bff3e, type: 3}
   - {fileID: 2800000, guid: 20f7ef14fa4486440881eb8a21c3da6d, type: 3}
@@ -257,14 +262,9 @@ MonoBehaviour:
   - {fileID: 2100000, guid: 3f8e1f283a7b2424bb90f6e99963424c, type: 2}
   - {fileID: 2100000, guid: d29694f57acc1c1499da9cf3e117c686, type: 2}
   - {fileID: 2100000, guid: f553b72f43f15a74db114f65f7e71d80, type: 2}
-  _renderer: {fileID: 0}
   meshes:
   - {fileID: 4300000, guid: 021e1e2401de93747b196ab6d0a050c0, type: 2}
   - {fileID: 4300000, guid: e14a3c2ac46db0840a7349f3c80c3ca4, type: 2}
-  filter: {fileID: 5293937165736117384}
-  streamFire: []
-  hitCount: 0
-  isExplode: 0
 --- !u!208 &8793133556691023302
 NavMeshObstacle:
   m_ObjectHideFlags: 0

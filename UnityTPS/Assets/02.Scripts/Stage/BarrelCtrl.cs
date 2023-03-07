@@ -6,6 +6,7 @@ public class BarrelCtrl : MonoBehaviour
 {
     #region Tag String
     string bulletTag = "BULLET";
+    string e_bulletTag = "E_BULLET";
     #endregion
 
     #region Components
@@ -73,7 +74,7 @@ public class BarrelCtrl : MonoBehaviour
     /// <summary> 콜라이더 충돌 감지 메서드 </summary>
     private void OnCollisionEnter(Collision col)
     {
-        if (col.collider.tag == bulletTag)
+        if (col.collider.tag == bulletTag || col.collider.tag == e_bulletTag)
         {
             if (hitCount >= 4)
             {
