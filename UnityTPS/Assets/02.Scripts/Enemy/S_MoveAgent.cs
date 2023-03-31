@@ -77,6 +77,7 @@ public class S_MoveAgent : MonoBehaviour
     private void Awake()
     {
         _agent = GetComponent<NavMeshAgent>();
+        waypointCore = GameObject.Find("Swat_PatrolPoints").transform;
     }
 
     private void OnEnable()
@@ -94,7 +95,8 @@ public class S_MoveAgent : MonoBehaviour
             // 순찰 포인트의 부모 객체 삭제
             wayPoints.RemoveAt(0);
         }
-        // MoveWayPoint();
+        MoveWayPoint();
+        nextIdx = Random.Range(0, wayPoints.Count);
     }
 
     void Update()
@@ -113,7 +115,10 @@ public class S_MoveAgent : MonoBehaviour
         // 목적지의 거리가 0.5보다 작으면, 이동중인징 알기 위해
         if (_agent.remainingDistance <= 0.5f && _agent.velocity.sqrMagnitude >= 0.2f * 0.2f)
         {
-            nextIdx = ++nextIdx % wayPoints.Count;
+            // 순차적 순찰 포인트
+            // nextIdx = ++nextIdx % wayPoints.Count;
+            // 랜덤 순찰 포인트
+            nextIdx = Random.Range(0, wayPoints.Count);
             MoveWayPoint();
         }
     }

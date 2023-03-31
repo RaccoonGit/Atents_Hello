@@ -6,6 +6,10 @@ TagManager:
   tags:
   - BULLET
   - E_BULLET
+  - ENEMY
+  - S_ENEMY
+  - BARREL
+  - WALL
   layers:
   - Default
   - TransparentFX
@@ -16,11 +20,11 @@ TagManager:
   - Barrel
   - Bullet
   - E_Bullet
+  - Obstacle
   - 
   - 
-  - 
-  - 
-  - 
+  - Enemy
+  - Player
   - 
   - 
   - 

@@ -96,7 +96,8 @@ public class MoveAgent : MonoBehaviour
             // 순찰 포인트의 부모 객체 삭제
             wayPoints.RemoveAt(0);
         }
-        // MoveWayPoint();
+        MoveWayPoint();
+        nextIdx = Random.Range(0, wayPoints.Count);
     }
 
     void Update()
@@ -115,7 +116,10 @@ public class MoveAgent : MonoBehaviour
         // 목적지의 거리가 0.5보다 작으면, 이동중인징 알기 위해
         if(agent.remainingDistance <= 0.5f && agent.velocity.sqrMagnitude >= 0.2f * 0.2f)
         {
-            nextIdx = ++nextIdx % wayPoints.Count;
+            // 순차적 순찰 포인트
+            // nextIdx = ++nextIdx % wayPoints.Count;
+            // 랜덤 순찰 포인트
+            nextIdx = Random.Range(0, wayPoints.Count);
             MoveWayPoint();
         }
     }

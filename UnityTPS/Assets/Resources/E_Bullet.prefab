@@ -189,7 +189,7 @@ ConstantForce:
   m_GameObject: {fileID: 7472477109095947220}
   m_Enabled: 1
   m_Force: {x: 0, y: 0, z: 0}
-  m_RelativeForce: {x: 0, y: 0, z: 90}
+  m_RelativeForce: {x: 0, y: 0, z: 50}
   m_Torque: {x: 0, y: 0, z: 0}
   m_RelativeTorque: {x: 0, y: 0, z: 0}
 --- !u!1001 &7472477107769503314

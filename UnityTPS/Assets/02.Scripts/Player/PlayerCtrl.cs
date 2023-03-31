@@ -27,7 +27,8 @@ public class PlayerCtrl : MonoBehaviour
     #region Unity Events
     void Start()
     {
-        anim = GetComponent<Animation>();
+        moveSpeed = GameManager.inst.gameData.speed;
+           anim = GetComponent<Animation>();
         tr = GetComponent<Transform>();
     }
 

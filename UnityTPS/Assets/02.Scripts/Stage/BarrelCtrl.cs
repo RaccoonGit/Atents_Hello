@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 
 public class BarrelCtrl : MonoBehaviour
 {
@@ -16,6 +17,11 @@ public class BarrelCtrl : MonoBehaviour
     private MeshRenderer _renderer;
     public MeshFilter _filter;
     #endregion
+
+    CameraShake shake;
+
+    public delegate void EnemiesDieHandler();
+    public static event EnemiesDieHandler OnEnemiesDie;
 
     #region Private Fields
     [SerializeField]
@@ -63,6 +69,9 @@ public class BarrelCtrl : MonoBehaviour
         rbody = GetComponent<Rigidbody>();
         _source = GetComponent<AudioSource>();
 
+        // shake = Camera.main.GetComponent<CameraShake>();
+        StartCoroutine(GetShake());
+
         explodeEff = Resources.Load<GameObject>("Effects/SmallExplosion_VFX");
         streamEff = Resources.Load<GameObject>("Effects/FlameStream_VFX");
         flameEff = Resources.Load<GameObject>("Effects/MediumFlames_VFX");
@@ -72,29 +81,29 @@ public class BarrelCtrl : MonoBehaviour
     }
 
     /// <summary> 콜라이더 충돌 감지 메서드 </summary>
-    private void OnCollisionEnter(Collision col)
-    {
-        if (col.collider.tag == bulletTag || col.collider.tag == e_bulletTag)
-        {
-            if (hitCount >= 4)
-            {
-                for(int i = 0; i < streamFire.Count; i++)
-                {
-                    Destroy(streamFire[i]);
-                }
-                Explode();
-            }
-            else
-            {
-                Vector3 hitPos = col.contacts[0].point;
-                Quaternion hitRot = Quaternion.FromToRotation(Vector3.forward, hitPos.normalized);
-                GameObject stream = Instantiate(streamEff, hitPos, hitRot, transform);
-                streamFire.Add(stream);
-                hitCount++;
-                _source.PlayOneShot(streamClip);
-            }
-        }
-    }
+    //private void OnCollisionEnter(Collision col)
+    //{
+    //    if (col.collider.tag == bulletTag || col.collider.tag == e_bulletTag)
+    //    {
+    //        if (hitCount >= 4)
+    //        {
+    //            for(int i = 0; i < streamFire.Count; i++)
+    //            {
+    //                Destroy(streamFire[i]);
+    //            }
+    //            Explode();
+    //        }
+    //        else
+    //        {
+    //            Vector3 hitPos = col.contacts[0].point;
+    //            Quaternion hitRot = Quaternion.FromToRotation(Vector3.forward, hitPos.normalized);
+    //            GameObject stream = Instantiate(streamEff, hitPos, hitRot, transform);
+    //            streamFire.Add(stream);
+    //            hitCount++;
+    //            _source.PlayOneShot(streamClip);
+    //        }
+    //    }
+    //}
     #endregion
 
     /***********************************************************************
@@ -117,6 +126,19 @@ public class BarrelCtrl : MonoBehaviour
             }
         }
     }
+
+    void OnDamage(object[] _params)
+    {
+        Vector3 firePos = (Vector3)_params[1];
+        Vector3 hitPos = (Vector3)_params[0];
+        Vector3 incomeVector = hitPos - firePos;
+        incomeVector = incomeVector.normalized;
+        GetComponent<Rigidbody>().AddForceAtPosition(incomeVector * 1000.0f, hitPos);
+        if (++hitCount == 5)
+        {
+            Explode();
+        }
+    }
     #endregion
 
     /***********************************************************************
@@ -125,6 +147,7 @@ public class BarrelCtrl : MonoBehaviour
     #region Public Methods
     public void Explode()
     {
+        shake.TurnOnShake();
         isExplode = true;
         streamFire.Clear();
         hitCount = 0;
@@ -145,6 +168,7 @@ public class BarrelCtrl : MonoBehaviour
                 rbody.mass = 1.0f;
                 // 리지드 바디 클래스에 있는 AddExplosionForce() 함수
                 rbody.AddExplosionForce(120.0f, transform.position, 20.0f, 100.0f);
+                OnEnemiesDie();
             }
         }
 
@@ -154,4 +178,13 @@ public class BarrelCtrl : MonoBehaviour
         // Destroy(gameObject, 3.0f);
     }
     #endregion
+
+    private IEnumerator GetShake()
+    {
+        while(!SceneManager.GetSceneByName("Level").isLoaded)
+        {
+            yield return null;
+        }
+        shake = Camera.main.GetComponent<CameraShake>();
+    }
 }

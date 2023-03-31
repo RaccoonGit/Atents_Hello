@@ -10,6 +10,11 @@ public class S_EnemyAI : MonoBehaviour
     // 해시 테이블에 있는 isMove를 찾아서 int 값으로 변환
     private readonly int hashMove = Animator.StringToHash("isMove");
     private readonly int hashVelocity = Animator.StringToHash("MoveVelocity");
+    private readonly int hashDie = Animator.StringToHash("isDie");
+    private readonly int hashDieIdx = Animator.StringToHash("DieIdx");
+    private readonly int hashOffset = Animator.StringToHash("Offset");
+    private readonly int hashWalkSpeed = Animator.StringToHash("WalkSpeed");
+    private readonly int hashPlayerDie = Animator.StringToHash("PlayerDie");
     #endregion
 
     #region Comonenets
@@ -63,13 +68,24 @@ public class S_EnemyAI : MonoBehaviour
 
         // WS 틱 수치 초기화
         ws = new WaitForSeconds(0.25f);
+
+        _animator.SetFloat(hashOffset, Random.Range(0.0f, 1.0f));
+        _animator.SetFloat(hashWalkSpeed, Random.Range(1.0f, 1.5f));
     }
 
     private void OnEnable()
     {
         StartCoroutine(CheckState());
         StartCoroutine(EnemyAction());
-        // StartCoroutine(SetAnimVelocity());
+        // 이벤트 연결
+        Damage.OnPlayerDie += this.OnPlayerDie;
+        BarrelCtrl.OnEnemiesDie += this.Die;
+    }
+    private void OnDisable()
+    {
+        // 이벤트 연결 해제
+        Damage.OnPlayerDie -= this.OnPlayerDie;
+        BarrelCtrl.OnEnemiesDie -= this.Die;
     }
 
     private void Update()
@@ -81,13 +97,55 @@ public class S_EnemyAI : MonoBehaviour
     private void OnDrawGizmos()
     {
         Gizmos.color = _attcolor;
-        Gizmos.DrawWireSphere(Tr.position, attackDist);
+        Gizmos.DrawWireSphere(transform.position, attackDist);
 
         Gizmos.color = _tracecolor;
-        Gizmos.DrawWireSphere(Tr.position, traceDist);
+        Gizmos.DrawWireSphere(transform.position, traceDist);
 
     }
     #endregion
+
+    public void Die()
+    {
+        if (isDie) return;
+        moveAgent.Stop();
+        isDie = true;
+        enemyFire.isFire = false;
+        moveAgent.patrolling = false;
+        _animator.SetInteger(hashDieIdx, Random.Range(1, 3));
+        _animator.SetTrigger(hashDie);
+        GetComponent<CapsuleCollider>().enabled = false;
+        GetComponent<Rigidbody>().isKinematic = true;
+        StopAllCoroutines();
+        this.gameObject.tag = "Untagged";
+        GameManager.inst.IncKillCount();
+
+        StartCoroutine(PushPool());
+
+        foreach(GameObject hpObj in GameObject.FindGameObjectsWithTag("ENEMYHPBAR"))
+        {
+            Destroy(hpObj);
+        }
+    }
+
+    public void OnPlayerDie()
+    {
+        moveAgent.Stop();
+        enemyFire.isFire = false;
+        StopAllCoroutines();
+        _animator.SetTrigger(hashPlayerDie);
+    }
+
+    private IEnumerator PushPool()
+    {
+        yield return new WaitForSeconds(3.0f);
+        isDie = false;
+        GetComponent<EnemyDamage>().hp = 100.0f;
+        GetComponent<CapsuleCollider>().enabled = true;
+        GetComponent<Rigidbody>().isKinematic = false;
+        curState = STATE.PATROL;
+        gameObject.SetActive(false);
+    }
 
     /***********************************************************************
     *                               Coroutines

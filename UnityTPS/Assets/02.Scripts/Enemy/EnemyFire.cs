@@ -7,6 +7,8 @@ public class EnemyFire : MonoBehaviour
     #region Animator Hash
     private readonly int hashFire = Animator.StringToHash("isFire");
     private readonly int hashReload = Animator.StringToHash("isReload");
+    private readonly int hashOffset = Animator.StringToHash("Offset");
+    private readonly int hashWalkSpeed = Animator.StringToHash("WalkSpeed");
     #endregion
 
     #region Components
@@ -70,6 +72,9 @@ public class EnemyFire : MonoBehaviour
         reloadSfx = Resources.Load<AudioClip>("Sound/p_reload_1");
 
         wsReload = new WaitForSeconds(reloadTime);
+
+        _animator.SetFloat(hashOffset, Random.Range(0.0f, 1.0f));
+        _animator.SetFloat(hashWalkSpeed, Random.Range(1.0f, 1.5f));
 
         _muzzleFlash.enabled = false;
     }

@@ -19,10 +19,10 @@ GameObject:
   - component: {fileID: 8793133556691023302}
   m_Layer: 6
   m_Name: Barrel
-  m_TagString: Untagged
+  m_TagString: BARREL
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
+  m_StaticEditorFlags: 1
   m_IsActive: 1
 --- !u!4 &5293937165733250216
 Transform:

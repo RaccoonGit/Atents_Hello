@@ -19,7 +19,7 @@ GameObject:
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
+  m_StaticEditorFlags: 1
   m_IsActive: 1
 --- !u!4 &7440718654618613448
 Transform:
@@ -109,6 +109,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: e1e3b309267fa25468215c7f9d8f4f2d, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  _source: {fileID: 0}
+  hitEffect: {fileID: 0}
+  hitSound: {fileID: 0}
 --- !u!82 &7467917160390274476
 AudioSource:
   m_ObjectHideFlags: 0
